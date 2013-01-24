@@ -1,0 +1,37 @@
+{
+  "name": "plunker_collab",
+  "subdomain": "plunker-collab",
+  "domains": [
+    "collab.plnkr.co"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "server.js"
+  },
+  "engines": {
+    "node": "0.8.x"
+  },
+  "version": "1.5.0",
+  "description": "The real-time collaboration server for Plunker",
+  "main": "server.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/filearts/plunker_collab.git"
+  },
+  "dependencies": {
+    "ShareJS": "https://github.com/josephg/ShareJS/tarball/master",
+    "express": "3.x",
+    "coffee-script": "1.4.x",
+    "nconf": "0.6.x",
+    "lactate": "0.12.x",
+    "connect-assets": "2.3.x",
+    "request": "2.12.x",
+    "faye-websocket": "0.4.x"
+  },
+  "keywords": [
+    "plunker",
+    "ShareJS"
+  ],
+  "author": "Geoffrey Goodman",
+  "license": "MIT"
+}
