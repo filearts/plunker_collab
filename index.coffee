@@ -5,8 +5,8 @@ lactate = require("lactate")
 assets = require("connect-assets")
 nconf = require("nconf")
 request = require("request")
+LRU = require("lru")
 
-Firebase = require("./firebase-node")
 pkginfo = require("./package.json")
 
 
@@ -70,8 +70,8 @@ app.use require("./middleware/vary").middleware()
 app.use lactate.static "#{__dirname}/build", lactateOptions
 
 
-permissions = new Firebase("https://plunker.firebaseio.com/permissions")
-permissions.set({})
+#permissions = new Firebase("https://plunker.firebaseio.com/participants")
+#permissions.set({})
 
 sharejs.server.attach app,
   browserChannel:
@@ -79,52 +79,57 @@ sharejs.server.attach app,
   browserchannel:
     cors: "*"
   auth: (agent, action) ->
+    accept = ->
+      console.log "[ACCEPT]", action.name, agent.name, arguments...
+      action.accept()
+      
+    reject = ->
+      console.log "[REJECT]", action.name, agent.name, arguments...
+      action.reject()
+    
+    testAction = (agent, action, required) ->
+      console.log "[REQUEST]", action.name, agent.name, required
+      
+      return accept("No docName") unless action.docName
+      
+      model.getSnapshot action.docName, (err, doc) ->
+        unless doc then return reject("No such doc:", action.docName)
+        
+        # The creator has full admin privileges
+        if agent.name is doc.meta.creator then return accept("Creator")
+
+        unless required
+          console.log "Unhandled op", arguments...
+          return reject("Operation not supported")
+          
+        console.log "[AUTH]", action.name, required
+        console.log "[AUTH]", agent.name, doc.snapshot.permissions[agent.name], doc.snapshot.permissions.$default
+        
+        perms = doc.snapshot.permissions[agent.name] or doc.snapshot.permissions.$default
+        
+        if perms[required] then accept() 
+        else reject("Insufficient permissions")
+            
     if action.name is "connect"
-      return action.reject() unless agent.authentication
+      return reject() unless agent.authentication
       
       request.get "#{apiUrl}/sessions/#{agent.authentication}", (err, response, body) ->
-        return action.reject() if err
-        return action.reject() if response.statusCode >= 400
+        return reject("Unable to load session") if err
+        return reject("Session not found") if response.statusCode >= 400
         
         try
           session = JSON.parse(body)
         catch e
-          return action.reject()
+          return reject("Unable to parse session data")
         
-        agent.name =
-          if session.user and session.user.name then "user:#{session.user.name}"
-          else "session:#{session.id}"
+        agent.name = session.public_id
         
-        action.accept()
+        accept()
         
-    else if action.name is "create"
-      permissions.child(action.docName).child(agent.name).set
-        write: true
-        admin: true
-
-      action.accept()
-      
-    else if action.name is "open"
-      permRef = permissions.child(action.docName).child(agent.name)
-      permRef.once "value", (snapshot) ->
-        unless snapshot.val() then permRef.set
-          write: false
-          admin: false
-
-      action.accept()
-      
-    else if action.type is "update"
-      #return action.accept()
-      permissions.child(action.docName).child(agent.name).once "value", (snapshot) ->
-        
-        perms = snapshot.val()
-      
-        if perms?.write then action.accept()
-        else action.reject()
-    
+    else if action.name is "submit op"
+      testAction(agent, action, "write")
     else
-      console.log "[OP]", action.name, action.type, action
-      action.accept()
+      accept()
     
     
 , model

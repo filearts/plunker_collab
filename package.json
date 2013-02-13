@@ -11,7 +11,7 @@
   "engines": {
     "node": "0.8.x"
   },
-  "version": "1.5.0",
+  "version": "1.5.0-2",
   "description": "The real-time collaboration server for Plunker",
   "main": "server.js",
   "repository": {
@@ -26,7 +26,7 @@
     "lactate": "0.12.x",
     "connect-assets": "2.3.x",
     "request": "2.12.x",
-    "faye-websocket": "0.4.x"
+    "lru": "0.1.x"
   },
   "keywords": [
     "plunker",
