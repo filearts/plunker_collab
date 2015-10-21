@@ -11,7 +11,7 @@
   "engines": {
     "node": "0.8.x"
   },
-  "version": "1.5.0-2",
+  "version": "1.5.0-3",
   "description": "The real-time collaboration server for Plunker",
   "main": "server.js",
   "repository": {
@@ -19,7 +19,7 @@
     "url": "git://github.com/filearts/plunker_collab.git"
   },
   "dependencies": {
-    "ShareJS": "https://github.com/josephg/ShareJS/tarball/master",
+    "share": "0.6.x",
     "express": "3.x",
     "coffee-script": "1.4.x",
     "nconf": "0.6.x",
