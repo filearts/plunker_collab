@@ -19,7 +19,7 @@
     "url": "git://github.com/filearts/plunker_collab.git"
   },
   "dependencies": {
-    "ShareJS": "https://github.com/josephg/ShareJS/tarball/master",
+    "share": "0.6.x",
     "express": "3.x",
     "coffee-script": "1.4.x",
     "nconf": "0.6.x",

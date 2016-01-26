@@ -7,7 +7,7 @@ nconf.use("memory")
   .env()
   .file({file: "config.#{env}.json"})
   .defaults({
-    PORT: 8080
+    PORT: 8083
   })
 
 unless host = nconf.get("host")
